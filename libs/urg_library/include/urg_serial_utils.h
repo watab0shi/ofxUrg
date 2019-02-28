@@ -3,28 +3,27 @@
 
 /*!
   \file
-  \brief シリアル用の補助関数
-
+  \brief Auxiliary functions for serial communications
   \author Satofumi KAMIMURA
 
   $Id$
 */
 
 
-//! シリアルポートを検索する
+//!  Finds the serial port
 extern int urg_serial_find_port(void);
 
 
-//! 検索したシリアルポート名を返す
+//!  Returns the name of the serial port found
 extern const char *urg_serial_port_name(int index);
 
 
 /*!
-  \brief ポートが URG かどうか
+  \brief Checks whether the serial port corresponds to a URG or not
 
-  \retval 1 URG のポート
-  \retval 0 不明
-  \retval <0 エラー
+  \retval 1 It is a URG
+  \retval 0 Unknown
+  \retval <0 Error
 */
 extern int urg_serial_is_urg_port(int index);
 

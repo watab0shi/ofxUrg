@@ -3,11 +3,10 @@
 
 /*!
   \file
-  \brief 通信の処理
-
+  \brief Process communications
   \author Satofumi KAMIMURA
 
-  $Id: urg_connection.h,v 1d233c7a2240 2011/02/19 03:08:45 Satofumi $
+  $Id$
 */
 
 #ifdef __cplusplus
@@ -19,55 +18,53 @@ extern "C" {
 
 
 /*!
-  \brief 定数定義
+  \brief Defines constants
 */
 enum {
-    URG_CONNECTION_TIMEOUT = -1, //!< タイムアウトが発生したときの戻り値
+    URG_CONNECTION_TIMEOUT = -1, //!<  Return value in case of timeout
 };
 
 
 /*!
-  \brief 通信タイプ
+  \brief Connection type
 */
 typedef enum {
-    URG_SERIAL,                 //!< シリアル, USB 接続
-    URG_ETHERNET,               //!< イーサーネット接続
+    URG_SERIAL,                 //!<  Serial/USB connection
+    URG_ETHERNET,               //!<  Ethernet connection
 } urg_connection_type_t;
 
 
 /*!
-  \brief 通信リソース
+  \brief Connection resources
 */
 typedef struct
 {
-    urg_connection_type_t type; //!< 接続タイプ
-    urg_serial_t serial;        //!< シリアル接続
-    urg_tcpclient_t tcpclient;  //!< イーサーネット接続
+    urg_connection_type_t type; //!<  Type of connection
+    urg_serial_t serial;        //!<  Serial connection
+    urg_tcpclient_t tcpclient;  //!<  Ethernet connection
 } urg_connection_t;
 
 
 /*!
-  \brief 接続
+  \brief Connection
 
-  指定されたデバイスに接続する。
+  Connects to the specified device
 
-  \param[in,out] connection 通信リソース
-  \param[in] connection_type 接続タイプ
-  \param[in] device 接続名
-  \param[in] baudrate_or_port ボーレート / ポート番号
+  \param[in,out] connection Connection resource
+  \param[in] connection_type Connection type
+  \param[in] device Device name
+  \param[in] baudrate_or_port Baudrate or port number
 
-  \retval 0 正常
-  \retval <0 エラー
+  \retval 0 Success
+  \retval <0 Error
 
-  connection_type には
+  The connection_type is either of:
 
-  - URG_SERIAL ... シリアル通信
-  - URG_ETHERNET .. イーサーネット通信
+  - URG_SERIAL ... Serial connection
+  - URG_ETHERNET .. Ethernet connection
 
-  を指定する。
-
-  device, baudrate_or_port の指定は connection_type により指定できる値が異なる。
-  例えば、シリアル通信の場合は以下のようになる。
+  device and baudrate_or_port arguments are defined according to connection_type
+  For example, in case of serial connection:
 
   Example
   \code
@@ -76,7 +73,7 @@ typedef struct
       return 1;
   } \endcode
 
-  また、イーサーネット通信の場合は以下のようになる。
+  And, in case of ethernet connection:
 
   Example
   \code
@@ -93,36 +90,35 @@ extern int connection_open(urg_connection_t *connection,
 
 
 /*!
-  \brief 切断
+  \brief Disconnection
 
-  デバイスとの接続を切断する。
+  Closes the connection with the device
 
-  \param[in,out] connection 通信リソース
-
+  \param[in,out] connection Connection resource
   \code
   connection_close(&connection); \endcode
-
   \see connection_open()
 */
 extern void connection_close(urg_connection_t *connection);
 
 
-/*! ボーレートを設定する */
+/*!
+  \brief Configures the baudrate
+*/
 extern int connection_set_baudrate(urg_connection_t *connection, long baudrate);
 
 
 /*!
-  \brief 送信
+  \brief Send
 
-  データを送信する。
+  Writes data over the communication channel
 
-  \param[in,out] connection 通信リソース
-  \param[in] data 送信データ
-  \param[in] size 送信バイト数
+  \param[in,out] connection Connection resource
+  \param[in] data Data to send
+  \param[in] size Number of bytes to send
 
-  \retval >=0 送信データ数
-  \retval <0 エラー
-
+  \retval >=0 Number of bytes sent
+  \retval <0 Error
   Example
   \code
   n = connection_write(&connection, "QT\n", 3); \endcode
@@ -134,22 +130,21 @@ extern int connection_write(urg_connection_t *connection,
 
 
 /*!
-  \brief 受信
+  \brief Receive
 
-  データを受信する。
+  Reads data from the communication channel
 
-  \param[in,out] connection 通信リソース
-  \param[in] data 受信データを格納するバッファ
-  \param[in] max_size 受信データを格納できるバイト数
-  \param[in] timeout タイムアウト時間 [msec]
+  \param[in,out] connection Connection resource
+  \param[in] data Buffer to store received data
+  \param[in] max_size Maximum size of the buffer
+  \param[in] timeout Timeout [msec]
 
-  \retval >=0 受信データ数
-  \retval <0 エラー
+  \retval >=0 Number of bytes received
+  \retval <0 Error
 
-  timeout に負の値を指定した場合、タイムアウトは発生しない。
+  If timeout argument is negative then the function waits until some data is received
 
-  1 文字も受信しなかったときは #URG_CONNECTION_TIMEOUT を返す。
-
+  In case no data is received #URG_CONNECTION_TIMEOUT is returned.
   Example
   \code
 enum {
@@ -166,24 +161,26 @@ extern int connection_read(urg_connection_t *connection,
 
 
 /*!
-  \brief 改行文字までの受信
+  \brief Receive until end-of-line
 
-  改行文字までのデータを受信する。
+  Reads data until the end-of-line character is detected.
 
-  \param[in,out] connection 通信リソース
-  \param[in] data 受信データを格納するバッファ
-  \param[in] max_size 受信データを格納できるバイト数
-  \param[in] timeout タイムアウト時間 [msec]
+  \param[in,out] connection Connection resource
+  \param[in] data Buffer to store received data
+  \param[in] max_size Maximum size of the buffer
+  \param[in] timeout Timeout [msec]
 
-  \retval >=0 受信データ数
-  \retval <0 エラー
+  \retval >=0 Number of bytes received
+  \retval <0 Error
 
-  data には、'\\0' 終端された文字列が max_size を越えないバイト数だけ格納される。 つまり、受信できる文字のバイト数は、最大で max_size - 1 となる。
+  If timeout argument is negative then the function waits until some data is received
 
-  改行文字は '\\r' または '\\n' とする。
+  The null terminator character '\\0' is used at the end of data so that the number of bytes does not exceed max_size.
+  This is, the maximum number of received characters is max_size - 1.
 
-  受信した最初の文字が改行の場合は、0 を返し、1 文字も受信しなかったときは #URG_CONNECTION_TIMEOUT を返す。
+  The end-of-line character is either '\\r' or '\\n'
 
+  In case no end-of-line is received then returns 0, if no data is received #URG_CONNECTION_TIMEOUT is returned.
   \see connection_write(), connection_read()
 */
 extern int connection_readline(urg_connection_t *connection,

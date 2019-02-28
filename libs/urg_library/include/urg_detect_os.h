@@ -3,11 +3,10 @@
 
 /*!
   \file
-  \brief OS ‚ÌŒŸo
-
+  \brief Detects the current OS
   \author Satofumi KAMIMURA
 
-  $Id: urg_detect_os.h,v 6c17b740611a 2014/03/24 09:58:01 jun $
+  $Id$
 */
 
 #if defined(_WIN32)
@@ -21,7 +20,7 @@
 #define URG_LINUX_OS
 
 #else
-// ŒŸo‚Å‚«‚È‚¢‚Æ‚«‚ğAMac ˆµ‚¢‚É‚µ‚Ä‚µ‚Ü‚¤
+// If cannot detect the OS, assumes it is a Mac
 #define URG_MAC_OS
 #endif
 

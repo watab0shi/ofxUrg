@@ -3,8 +3,7 @@
 
 /*!
   \file
-  \brief タイムスタンプの取得
-
+  \brief Gets timestamp values
   \author Satofumi KAMIMURA
 
   $Id$

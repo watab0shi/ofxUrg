@@ -3,11 +3,10 @@
 
 /*!
   \file
-  \brief Lidar インターフェース
-
+  \brief Lidar interface
   \author Satofumi KAMIMURA
 
-  $Id: lidar.h 1937 2010-10-25 01:12:49Z satofumi $
+  $Id$
 */
 
 #include <vector>
@@ -16,15 +15,15 @@
 
 namespace qrk
 {
-    //! Lidar インターフェース
+    //!  Lidar interface
     class Lidar
     {
     public:
         typedef enum {
-            Distance,            /*!< 距離 */
-            Distance_intensity,  /*!< 距離 + 強度 */
-            Multiecho,           /*!< マルチエコーの距離 */
-            Multiecho_intensity, /*!< マルチエコーの(距離 + 強度) */
+            Distance,            //!<  Range
+            Distance_intensity,  //!<  Distance (range) and intensity (strength)
+            Multiecho,           //!<  Multiecho distance
+            Multiecho_intensity, //!<  Multiecho distance and intensity
         } measurement_type_t;
 
         typedef enum {
@@ -54,11 +53,11 @@ namespace qrk
         virtual void wakeup(void) = 0;
         virtual bool is_stable(void) = 0;
 
-        // !!! データ取得の開始
+        //!  Starts data measurement process
         virtual bool start_measurement(measurement_type_t type,
                                        int scan_times, int skip_scan) = 0;
 
-        // !!! 受信データの受け取り
+        //!  Receives measurement data
         virtual bool get_distance(std::vector<long>& data,
                                   long *time_stamp) = 0;
         virtual bool get_distance_intensity(std::vector<long>& data,
@@ -77,13 +76,13 @@ namespace qrk
         virtual bool set_scanning_parameter(int first_step, int last_step,
                                             int skip_step) = 0;
 
-        // !!! データ取得の中断
+        //!  Stops data measurement process
         virtual void stop_measurement(void) = 0;
 
-        // !!! タイムスタンプの同期
+        //!  Synchronization of timestamps
         virtual bool set_sensor_time_stamp(long time_stamp) = 0;
 
-        // !!! 角度変換
+        //!  Angle conversion functions
         virtual double index2rad(int index) const = 0;
         virtual double index2deg(int index) const = 0;
         virtual int rad2index(double radian) const = 0;
