@@ -123,8 +123,7 @@ public:
     {
         is_frame_new = false;
         
-        ofMutex mutex;
-        mutex.lock();
+        lock();
         if (data != data_buffer)
         {
             data = data_buffer;
@@ -139,20 +138,17 @@ public:
                 is_frame_new = true;
             }
         }
-        mutex.unlock();
+        unlock();
     }
     
     void drawDebug(float width = ofGetWindowWidth(), float height = ofGetWindowHeight()) const
     {
-        ofMutex mutex;
-        mutex.lock();
         for (int i=0; i<data.size(); i++)
         {
             float x = ofMap(i, 0, data.size(), 0, width, true);
             float y = ofMap(data[i], 0, 1500, 0, height, true);
             ofLine(x, 0, x, y);
         }
-        mutex.unlock();
     }
     void drawDebugPolar() const
     {
@@ -160,8 +156,6 @@ public:
         m.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         m.addVertex(ofVec3f::zero());
         
-        ofMutex mutex;
-        mutex.lock();
         for (int i=0; i<data.size(); i++)
         {
             float r = data[i];
@@ -170,7 +164,6 @@ public:
             float y = r * sin(theta);
             m.addVertex(ofVec3f(x,y));
         }
-        mutex.unlock();
         
         m.draw();
     }
