@@ -205,6 +205,7 @@ public:
     const vector<unsigned short>& getIntensity() const { return intensity; }
     unsigned short getIntensity(int index) const { return intensity.at(index); }
     
+    double getFps() const { return fps.getFps(); }
 protected:
     
     void threadedFunction()
@@ -219,15 +220,20 @@ protected:
                     {
                         if (!urg.get_distance(data_buffer, &timestamp))
                             ofLogError("urg get distance", urg.what());
+                        else
+                            fps.newFrame();
                     }
                     if (mode == DISTANCE_INTENSITY)
                     {
                         if (!urg.get_distance_intensity(data_buffer, intensity_buffer, &timestamp))
                             ofLogError("urg get distance intensity", urg.what());
+                        else
+                            fps.newFrame();
                     }
                 }
+                unlock();
             }
-            unlock();
+            ofSleepMillis(1);
         }
     }
     string device_or_ip_name;
@@ -241,6 +247,7 @@ protected:
     vector<long> data, data_buffer;
     vector<unsigned short> intensity, intensity_buffer;
     long timestamp;
+    ofFpsCounter fps;
 };
 
 OFX_URG_END_NAMESPACE

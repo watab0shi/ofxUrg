@@ -32,6 +32,7 @@ public:
 
     void draw()
     {
+        urg.drawDebug();
         cam.begin();
         ofPushMatrix();
         float s = 0.1;
@@ -43,6 +44,7 @@ public:
         cam.end();
 
         ofDrawBitmapString(ofToString(ofGetFrameRate(), 0), 20, 20);
+        ofDrawBitmapString(ofToString(urg.getFps()), 20, 40);
     }
 };
 
