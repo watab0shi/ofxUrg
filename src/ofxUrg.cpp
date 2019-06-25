@@ -156,4 +156,85 @@ void Device::threadedFunction()
 }
 
 
+void Processor::Cluster::draw()
+{
+    ofDrawSphere(centroid, 5);
+    
+    glBegin(GL_LINE_STRIP);
+    for (auto & p : points)
+    {
+        glVertex3f(p.x, p.y, p.z);
+    }
+    glEnd();
+}
+
+void Processor::update()
+{
+    Device::update();
+    if (!isFrameNew()) {
+        return;
+    }
+
+    ofMatrix4x4 mat = getGlobalTransformMatrix();
+    points_3d.clear();
+    clusters.clear();
+    Cluster current_cluster;
+    for (int i=0; i<data.size(); i++) {
+        float r = data[i];
+        if (r > valid_range_min && r < valid_range_max) {
+            auto theta = urg.index2rad(i);
+            float x = r * cos(theta) * scale;
+            float y = r * sin(theta) * scale;
+            auto world = ofVec3f(x,0,-y) * mat;
+            if (world.x > valid_aabb_min.x && world.x < valid_aabb_max.x
+                && world.y > valid_aabb_min.y && world.y < valid_aabb_max.y
+                && world.z > valid_aabb_min.z && world.z < valid_aabb_max.z) {
+                points_3d.emplace_back(world);
+                
+                if (current_cluster.points.size() != 0 &&
+                    (current_cluster.end_point.second - world).length() < clustering_dist_th) {
+                    int prev_size = current_cluster.points.size();
+                    float f = (float)prev_size/(prev_size+1);
+                    current_cluster.points.emplace_back(world);
+                    current_cluster.centroid = f*current_cluster.centroid + (1.0 - f)*world;
+                    current_cluster.end_point.first = i;
+                    current_cluster.end_point.second = world;
+                } else {
+                    if (current_cluster.points.size()) {
+                        clusters.emplace_back(current_cluster);
+                    }
+                    current_cluster = Cluster();
+                    current_cluster.points.emplace_back(world);
+                    current_cluster.centroid = world;
+                    current_cluster.start_point.first = i;
+                    current_cluster.start_point.second = world;
+                    current_cluster.end_point.first = i;
+                    current_cluster.end_point.second = world;
+                }
+                
+            }
+        }
+    }
+}
+
+void Processor::drawDebug3d()
+{
+    ofPushStyle();
+    glPointSize(4);
+    glBegin(GL_POINTS);
+    for (auto & p : points_3d)
+    {
+        glVertex3f(p.x, p.y, p.z);
+    }
+    glEnd();
+    
+    ofSetLineWidth(2);
+    for (auto& c : clusters)
+    {
+        c.draw();
+    }
+    ofPopStyle();
+}
+
+
 OFX_URG_END_NAMESPACE

@@ -104,6 +104,53 @@ protected:
     ofFpsCounter fps;
 };
 
+// coord space is defined as Y-up (same as default oF space)
+class Processor : public Device, public ofNode
+{
+public:
+    struct Cluster
+    {
+        pair<int, ofVec3f> start_point;
+        pair<int, ofVec3f> end_point;
+        vector<ofVec3f> points;
+        ofVec3f centroid;
+        
+        void draw();
+    };
+public:
+    // parameters
+    float valid_range_min;
+    float valid_range_max;
+    ofVec3f valid_aabb_min;
+    ofVec3f valid_aabb_max;
+
+    float scale; // by default, converting mm to cm
+    float clustering_dist_th; // in cm..?
+
+protected:
+    // data
+    vector<ofVec3f> points_3d;
+    vector<Cluster> clusters;
+    
+
+public:
+    Processor()
+    :valid_range_min(0)
+    ,valid_range_max(FLT_MAX)
+    ,valid_aabb_min(ofVec3f(std::numeric_limits<float>::lowest()))
+    ,valid_aabb_max(ofVec3f(std::numeric_limits<float>::max()))
+    ,clustering_dist_th(20)
+    ,scale(0.1)
+    {}
+    
+    void update();
+    
+    const vector<Cluster>& getClusters() const { return clusters; }
+    const vector<ofVec3f>& getPoints() const { return points_3d; }
+    
+    void drawDebug3d();
+};
+
 OFX_URG_END_NAMESPACE
 
 namespace ofxUrg = ofx::Urg;
