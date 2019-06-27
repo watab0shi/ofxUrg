@@ -104,7 +104,9 @@ protected:
     ofFpsCounter fps;
 };
 
-// coord space is defined as Y-up (same as default oF space)
+// coord space is defined as
+// Y-up and X-right (same as default oF space)
+// it's more like naive interpretation of LIDAR orientation.
 class Processor : public Device, public ofNode
 {
 public:
@@ -149,6 +151,7 @@ public:
     const vector<ofVec3f>& getPoints() const { return points_3d; }
     
     void drawDebug3d();
+    void drawDebugPolarOfSpace();
 };
 
 OFX_URG_END_NAMESPACE

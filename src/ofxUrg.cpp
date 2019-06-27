@@ -185,7 +185,7 @@ void Processor::update()
             auto theta = urg.index2rad(i);
             float x = r * cos(theta) * scale;
             float y = r * sin(theta) * scale;
-            auto world = ofVec3f(x,0,-y) * mat;
+            auto world = ofVec3f(-y,0,-x) * mat;
             if (world.x > valid_aabb_min.x && world.x < valid_aabb_max.x
                 && world.y > valid_aabb_min.y && world.y < valid_aabb_max.y
                 && world.z > valid_aabb_min.z && world.z < valid_aabb_max.z) {
@@ -234,6 +234,18 @@ void Processor::drawDebug3d()
         c.draw();
     }
     ofPopStyle();
+}
+
+void Processor::drawDebugPolarOfSpace()
+{
+    ofPushMatrix();
+    const float s = scale;
+    ofScale(s, s, s);
+    ofRotateX(-90);
+    ofRotateZ(90);
+    drawDebugPolar();
+    ofPopMatrix();
+
 }
 
 
