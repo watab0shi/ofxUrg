@@ -240,6 +240,7 @@ void Processor::drawDebugPolarOfSpace()
 {
     ofPushMatrix();
     const float s = scale;
+    ofMultMatrix(getGlobalTransformMatrix());
     ofScale(s, s, s);
     ofRotateX(-90);
     ofRotateZ(90);
