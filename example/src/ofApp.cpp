@@ -1,61 +1,60 @@
-#include "ofMain.h"
-#include "ofxUrg.h"
+#include "ofApp.h"
 
-class ofApp : public ofBaseApp {
+void ofApp::setup()
+{
+  ofLogToConsole();
+  ofSetFrameRate(60);
+  ofSetVerticalSync(true);
+  ofBackground(0);
 
-    ofxUrg::Device urg;
-    ofEasyCam cam;
+  urg.setMode(ofxUrg::DISTANCE_INTENSITY);
+  urg.setupEthernet();
 
-public:
-    void setup()
+  ofLogNotice("Product", urg.productType());
+  ofLogNotice("Serial", urg.serialId());
+  ofLogNotice("Status", urg.status());
+  ofLogNotice("State", urg.state());
+  ofLogNotice("Firmware version", urg.firmwareVersion());
+
+  urg.start();
+}
+
+void ofApp::update()
+{
+  urg.update();
+}
+
+void ofApp::draw()
+{
+  ofSetColor(128);
+  urg.drawDebug();
+
+  cam.begin();
+  {
+    ofEnableDepthTest();
+    ofPushMatrix();
     {
-        ofSetFrameRate(60);
-        ofSetVerticalSync(true);
-        ofBackground(0);
+      float s = 0.1;
+      ofScale(s, s, s);
+      ofRotateZ(-90);
+      ofSetColor(255);
+      urg.drawDebugPolar();
+    }
+    ofPopMatrix();
 
-        urg.setMode(ofxUrg::DISTANCE_INTENSITY);
-        urg.setupEthernet("192.168.0.200");
-
-        ofLogNotice("Product", urg.productType());
-        ofLogNotice("Serial", urg.serialId());
-        ofLogNotice("Status", urg.status());
-        ofLogNotice("State", urg.state());
-        ofLogNotice("Firmware version", urg.firmwareVersion());
-
-        urg.start();
+    ofFill();
+    ofSetColor(255, 0, 0);
+    for(auto c : urg.getClusters())
+    {
+      ofDrawSphere(c.centroid.getRotated(90, ofVec3f(1, 0, 0)) * ofVec3f(-1, -1, 1), 3);
     }
 
-    void update()
-    {
-        urg.update();
-    }
+    ofDrawAxis(100);
+    ofDisableDepthTest();
+  }
+  cam.end();
 
-    void draw()
-    {
-        urg.drawDebug();
-        cam.begin();
-        ofPushMatrix();
-        float s = 0.1;
-        ofScale(s, s, s);
-        ofRotateZ(-90);
-        urg.drawDebugPolar();
-        ofPopMatrix();
-        ofDrawAxis(100);
-        cam.end();
-
-        ofDrawBitmapString(ofToString(ofGetFrameRate(), 0), 20, 20);
-        ofDrawBitmapString(ofToString(urg.getFps()), 20, 40);
-    }
-};
-
-//========================================================================
-int main( ){
-    ofSetupOpenGL(1024,768,OF_WINDOW);            // <-------- setup the GL context
-
-    // this kicks off the running of my app
-    // can be OF_WINDOW or OF_FULLSCREEN
-    // pass in width and height too:
-    ofRunApp(new ofApp());
-
-    return 0;
+  ofSetColor(255);
+  ofDrawBitmapString(ofToString(ofGetFrameRate(), 0), 20, 20);
+  ofDrawBitmapString(ofToString(urg.getFps()), 20, 40);
 }

@@ -62,3 +62,15 @@ Temporary Items
 *.out
 *.app
 
+# VisualStudio
+*.sln
+*.vcxproj
+*.vcxproj.*
+.vs
+obj
+*.exp
+*.iobj
+*.ipdb
+*.pdb
+*.ilk
+icon.rc
